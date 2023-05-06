@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BSE Trade Simulator</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>BSE Trade Simulator</h1>
+    <form>
+      <label for="stock">Broker Id</label>
+      <input type="text" id="stock" name="stock"><br><br>
+
+      <label for="tradingPrice">Trading Price:</label>
+      <input type="number" id="tp" name="tradingPrice"><br><br>
+
+      <label for="buyerTeam">Buyer Team:</label>
+      <input type="number" id="bid" name="buyerTeam"><br><br>
+
+      <label for="sellerTeam">Seller Team:</label>
+      <input type="number" id="sid" name="sellerTeam"><br><br>
+
+      <label for="numStocks">Number of Stocks:</label>
+      <input type="number" id="st" name="numStocks"><br><br>
+    </form>
+    <button type="submit" id="show1" style="text-align: center; margin: auto;" onclick="transaction()">Submit</button>
+    <div id="result3">
+
+    </div>
+    <br>
+    
+    <button type="submit" id="show1" style="text-align: center; margin: auto;" onclick="showfund()">Show Funds</button>
+    <div id="results">
+      
+    </div>
+    <br>
+    <button type="submit" id="show1" style="text-align: center; margin: auto;" onclick="showcmp()">Show Current Market Price</button>
+    <div id="result1">
+      
+    </div>
+    <br>
+    <button type="submit" id="show1" style="text-align: center; margin: auto;" onclick="showstocks()">Show Current Holdings</button>
+    <div id="result2">
+      
+    </div>
+    <br>
+    <script>
+    async function showfund() {
+      fetch('https://bse-backend-ra7g.onrender.com/showfunds',{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(async d => {
+        if (d.status == 200) {
+          const data = await d.json();
+          console.log(data);
+          let resultsdiv = document.getElementById('results');
+          console.log(typeof(data));
+          if (Object.keys(data).length == 0) {
+            resultsdiv.innerHTML = `<div class="tab red">No funds Found</div>`
+          } else {
+            resultsdiv.innerHTML = ``
+            data.forEach(element => {
+              resultsdiv.innerHTML = resultsdiv.innerHTML + `
+                <div class="tab red">
+                  TEAM ID = ${element.id} <br>
+                  FUNDS = ${element.funds} <br>
+                </div>
+              `
+            });
+          }
+        }
+      })
+    };
+    async function showcmp() {
+      fetch('https://bse-backend-ra7g.onrender.com/showcmp',{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(async d => {
+        if (d.status == 200) {
+          const data = await d.json();
+          console.log(data);
+          let resultsdiv = document.getElementById('result1');
+          console.log(typeof(data));
+          if (Object.keys(data).length == 0) {
+            resultsdiv.innerHTML = `<div class="tab red">No funds Found</div>`
+          } else {
+            resultsdiv.innerHTML = ``
+            data.forEach(element => {
+              resultsdiv.innerHTML = resultsdiv.innerHTML + `
+                <div class="tab red">
+                  Stock Name = ${element.id} <br>
+                  Current Market Price = ${element.cmp} <br>
+                </div>
+              `
+            });
+          }
+        }
+      })
+    };
+    async function showstocks() {
+      fetch('https://bse-backend-ra7g.onrender.com/showstocks',{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(async d => {
+        if (d.status == 200) {
+          const data = await d.json();
+          console.log(data);
+          let resultsdiv = document.getElementById('result2');
+          console.log(typeof(data));
+          if (Object.keys(data).length == 0) {
+            resultsdiv.innerHTML = `<div class="tab red">No funds Found</div>`
+          } else {
+            resultsdiv.innerHTML = ``
+            data.forEach(element => {
+              resultsdiv.innerHTML = resultsdiv.innerHTML + `
+                <div class="tab red">
+                  TEAM ID = ${element.id} <br>
+                  Stock1 = ${element.stock_1} <br>
+                  Stock2 = ${element.stock_2} <br>
+                  Stock3 = ${element.stock_3} <br>
+                  Stock4 = ${element.stock_4} <br>
+                  Stock5 = ${element.stock_5} <br>
+                  Stock6 = ${element.stock_6} <br>
+                  Stock7 = ${element.stock_7} <br>
+                  Stock8 = ${element.stock_8} <br>
+                </div>
+              `
+            });
+          }
+        }
+      })
+    };
+    async function transaction() {
+  const stid = document.getElementById('stock').value;
+  const tp = document.getElementById('tp').value;
+  const bid = document.getElementById('bid').value;
+  const sid = document.getElementById('sid').value;
+  const st = document.getElementById('st').value;
+
+  const data = {
+    "bid": Number(bid),
+    "sid": Number(sid),
+    "tp": Number(tp),
+    "st": Number(st),
+    "stid": stid
+  }
+
+  console.log(JSON.stringify(data));
+
+  try {
+    const response = await fetch('https://bse-backend-ra7g.onrender.com/transaction', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.status === 200) {
+      const resultsdiv = document.getElementById('result3');
+      resultsdiv.innerHTML = `
+        <div class="tab red">
+          transaction sucessfull
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+</script>
+  </body>
+</html>
